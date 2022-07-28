@@ -17,10 +17,15 @@
   },
   "homepage": "https://github.com/knight19jonathan/SQL-Employee-Tracker#readme",
   "dependencies": {
+    "@mysql/xdevapi": "^8.0.30",
+    "body-parser": "^1.20.0",
+    "console.table": "^0.10.0",
     "express": "^4.18.1",
     "fs": "^0.0.1-security",
     "inquirer": "^8.2.4",
+    "json2csv": "^5.0.7",
     "mysql2": "^2.3.3",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "util": "^0.12.4"
   }
 }
