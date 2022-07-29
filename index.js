@@ -108,18 +108,15 @@ async function addEmployees() {
 
         } else {
 
-            db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [newEmployee.firstName, newEmployee.lastName, newEmployee.roleId], function (err, results, fields) {
+            db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.roleId], function (err, results, fields) {
                 if (err) throw err;
-                console.table(results, ['First Name', 'Last Name'])
+                console.table(results, ['First Name', 'Last Name', 'Role', 'Employee ID#'])
             });
         }
         init(); 
     })
 
 }
-
-
-
 
 
 function showRoles() {
@@ -157,21 +154,5 @@ function showDepartments() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 init();
 
-// const showEmployees = JSON.parse(JSON.stringify(results));
-// const csvFields = ['id', 'first_name', 'last_name', 'role_id', 'manager_id'];
-// const outputEmpTable = new json2csvParser({ csvFields });
-// const csv = json2csvParser.parse(outputEmpTable)
-// console.log(csv);   
