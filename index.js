@@ -1,13 +1,17 @@
 // Company Name Union Aerospace Corporation 
 const mysql = require('mysql2');
-// const mysqlx = require('@mysql/xdevapi')
 const inquirer = require('inquirer');
-const path = require('path');
-const { inherits } = require('util');
-// const bodyParser = require('body-parser');
-// const json2csvParser = require('json2csv').Parser;
-
 const cTable = require('console.table');
+console.table([
+    {
+        name: 'test',
+        age: 30
+    },
+    {
+        name: 'mike',
+        age: 18
+    }
+]);
 
 
 
@@ -28,40 +32,48 @@ const init = async () => {
         [{
             type: 'list',
             name: 'menuHR',
-            message: 'Welcome to the Union Aerospace Corporation (UAC) Employee Database Management Program, please select an option:',
-            choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Departments']
+            message: 'Welcome to the Union Aerospace Corporation (UAC) Employee Database Management Program, please select an option, features marked with (x) are still not fully initialized will end program:',
+            choices: ['View All Employees', 'Add Employee', 'Update Employee Role(x)', 'View All Roles', 'Add Role(x)', 'View All Departments', 'Add Departments(x)', 'Exit']
         }]
-    
+
     )
     console.log(mainMenu.menuHR)
     if (mainMenu.menuHR === 'View All Employees') {
         showEmployees();
     } else if (mainMenu.menuHR === 'View All Roles') {
         showRoles();
-    }else if (mainMenu.menuHR === 'View All Departments') {
+    } else if (mainMenu.menuHR === 'View All Departments') {
         showDepartments();
-    }else if (mainMenu.menuHR === 'Add Employee') {
+    } else if (mainMenu.menuHR === 'Add Employee') {
         addEmployees();
-    }
-}
+    } else if (mainMenu.menuHR === 'Add Role') {
+        addRole();
+    } else if (mainMenu.menuHR === 'Exit') {
+        console.log("You have exited the program!");
+        process.exit();
+    } else {
 
-function showEmployees(){
-     db.connect(function(err){
-        if(err) {
+    }
+};
+
+function showEmployees() {
+    db.connect(function (err) {
+        if (err) {
             throw err;
         } else {
-        const showTableEmp = "SELECT id, first_name, last_name FROM employee"
-        db.query(showTableEmp, function (err, results, fields) {
-            if (err)throw err;
-            console.log(results)
-        });
-        }    
-        
-    }) 
-    init(); 
+            const showTableEmp = "SELECT * FROM employee"
+            db.query(showTableEmp, function (err, results, fields) {
+                if (err) throw err;
+                const table = cTable.getTable(results)
+                console.log(table);
+            })
+            init();
+        }
+    })
+    
 }
 
-async function addEmployees(){
+async function addEmployees() {
     const newEmployee = await inquirer.prompt(
         [
             { //new employee questions
@@ -75,61 +87,72 @@ async function addEmployees(){
                 message: 'Enter the new hires last name less than 45 characters.'
             },
             {
-                type: 'input',
+                type: 'list',
                 name: 'role',
-                message: 'Enter the new hires role.'
+                message: 'Enter the new hires role.',
+                choices: ['Sales', 'Engineering', 'Finance', 'Legal', 'Human Resources', 'Marketing', 'Security', 'Quality Assurance', 'Customer Service', 'Executive']
+            },
+            {
+                type: 'number',
+                name: 'roleId',
+                message: 'Create a 5 digit employee role Id'
             }
         ]
-        
     )
-    return newEmployee
-    
-}
-    
 
-db.connect(function(err){
-       if(err) {
-           throw err;
-       } else {
-       const showTableEmp = "INSERT INTO employee"
-       db.query(showTableEmp, function (err, results, fields) {
-           if (err)throw err;
-           console.log(results)
-       });
-       }    
-       
-   }) 
-   init(); 
+    console.log(newEmployee);
 
-
-function showRoles(){
-    db.connect(function(err){
-        if(err) {
+    db.connect(function (err) {
+        if (err) {
             throw err;
+
         } else {
-        const showTableEmp = "SELECT title FROM employee_role"
-        db.query(showTableEmp, function (err, results, fields) {
-            if (err)throw err;
-            console.log(results)
-        });
-        }     
-    }) 
-    init(); 
+
+            db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [newEmployee.firstName, newEmployee.lastName, newEmployee.roleId], function (err, results, fields) {
+                if (err) throw err;
+                console.table(results, ['First Name', 'Last Name'])
+            });
+        }
+        init(); 
+    })
+
 }
 
-function showDepartments(){
-    db.connect(function(err){
-        if(err) {
+
+
+
+
+function showRoles() {
+    db.connect(function (err) {
+        if (err) {
             throw err;
         } else {
-        const showTableEmp = "SELECT depName FROM department"
-        db.query(showTableEmp, function (err, results, fields) {
-            if (err)throw err;
-            console.log(results)
-        });
-        }     
-    }) 
-    init(); 
+            const showTableEmp = "SELECT * FROM employee_role"
+            db.query(showTableEmp, function (err, results, fields) {
+                if (err) throw err;
+                const table = cTable.getTable(results)
+                console.log(['Role', 'Salary', 'Department Id #'], table);
+                
+            })
+            init();
+        }
+    })
+    
+}
+
+function showDepartments() {
+    db.connect(function (err) {
+        if (err) {
+            throw err;
+        } else {
+            const showTableEmp = "SELECT depName FROM department"
+            db.query(showTableEmp, function (err, results, fields) {
+                if (err) throw err;
+                console.table(results, ['Departments:'])
+            });
+        }
+    })
+    init();
 }
 
 
@@ -147,7 +170,7 @@ function showDepartments(){
 
 init();
 
-// const showEmployees = JSON.parse(JSON.stringify(results)); 
+// const showEmployees = JSON.parse(JSON.stringify(results));
 // const csvFields = ['id', 'first_name', 'last_name', 'role_id', 'manager_id'];
 // const outputEmpTable = new json2csvParser({ csvFields });
 // const csv = json2csvParser.parse(outputEmpTable)
