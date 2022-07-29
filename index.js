@@ -28,32 +28,35 @@ const db = mysql.createConnection(
 
 
 const init = async () => {
-    const mainMenu = await inquirer.prompt(
-        [{
-            type: 'list',
-            name: 'menuHR',
-            message: 'Welcome to the Union Aerospace Corporation (UAC) Employee Database Management Program, please select an option, features marked with (x) are still not fully initialized will end program:',
-            choices: ['View All Employees', 'Add Employee', 'Update Employee Role(x)', 'View All Roles', 'Add Role(x)', 'View All Departments', 'Add Departments(x)', 'Exit']
-        }]
+    //return new Promise((resolve,reject)=>{
+        const mainMenu = await inquirer.prompt(
+            [{
+                type: 'list',
+                name: 'menuHR',
+                message: 'Welcome to the Union Aerospace Corporation (UAC) Employee Database Management Program, please select an option, features marked with (x) are still not fully initialized will end program:',
+                choices: ['View All Employees', 'Add Employee', 'Update Employee Role(x)', 'View All Roles', 'Add Role(x)', 'View All Departments', 'Add Departments(x)', 'Exit']
+                // 
+            }]
 
-    )
-    console.log(mainMenu.menuHR)
-    if (mainMenu.menuHR === 'View All Employees') {
-        showEmployees();
-    } else if (mainMenu.menuHR === 'View All Roles') {
-        showRoles();
-    } else if (mainMenu.menuHR === 'View All Departments') {
-        showDepartments();
-    } else if (mainMenu.menuHR === 'Add Employee') {
-        addEmployees();
-    } else if (mainMenu.menuHR === 'Add Role') {
-        addRole();
-    } else if (mainMenu.menuHR === 'Exit') {
-        console.log("You have exited the program!");
-        process.exit();
-    } else {
+        )
+        console.log("wenk")
+        console.log(mainMenu.menuHR)
+        if (mainMenu.menuHR === 'View All Employees') {
+            showEmployees();
+        } else if (mainMenu.menuHR === 'View All Roles') {
+            showRoles();
+        } else if (mainMenu.menuHR === 'View All Departments') {
+            showDepartments();
+        } else if (mainMenu.menuHR === 'Add Employee') {
+            addEmployees();
+        } else if (mainMenu.menuHR === 'Add Role') {
+            addRole();
+        } else if (mainMenu.menuHR === 'Exit') {
+            console.log("You have exited the program!");
+            process.exit(1);
+        } else {
 
-    }
+        }
 };
 
 function showEmployees() {
@@ -74,6 +77,7 @@ function showEmployees() {
 }
 
 async function addEmployees() {
+    
     const newEmployee = await inquirer.prompt(
         [
             { //new employee questions
@@ -99,24 +103,26 @@ async function addEmployees() {
             }
         ]
     )
-
     console.log(newEmployee);
-
     db.connect(function (err) {
         if (err) {
             throw err;
-
         } else {
-
-            db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [newEmployee.firstName, newEmployee.lastName, newEmployee.role, newEmployee.roleId], function (err, results, fields) {
-                if (err) throw err;
-                console.table(results, ['First Name', 'Last Name', 'Role', 'Employee ID#'])
+            db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [newEmployee.firstName, newEmployee.lastName, newEmployee.roleId], function (err, results, fields) {
+                if (err){ throw err;
+                } else {
+                console.table(results)
+                }
             });
         }
-        init(); 
+        console.log("alpha")
     })
+    init();
 
 }
+
+
+
 
 
 function showRoles() {
